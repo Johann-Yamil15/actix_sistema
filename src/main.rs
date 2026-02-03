@@ -84,17 +84,32 @@ async fn main() -> std::io::Result<()> {
         .expect("❌ Error conectando a Neon");
 
     println!("🚀 Servidor ejecutándose en http://0.0.0.0:8080");
+    let port: u16 = std::env::var("PORT")
+    .unwrap_or_else(|_| "8080".to_string())
+    .parse()
+    .expect("PORT inválido");
 
-    HttpServer::new(move || {
-        App::new()
-            .app_data(web::Data::new(pool.clone()))
-            .route("/", web::get().to(inicio))
-            .route("/pantalla1", web::get().to(pantalla1))
-            .route("/pantalla2", web::get().to(pantalla2))
-            .route("/pantalla3", web::get().to(pantalla3))
-            .route("/crear_usuario", web::post().to(crear_usuario))
-    })
-    .bind(("0.0.0.0", 8080))?
+HttpServer::new(move || {
+    App::new()
+        .app_data(web::Data::new(pool.clone()))
+        .route("/", web::get().to(inicio))
+        .route("/pantalla1", web::get().to(pantalla1))
+        .route("/pantalla2", web::get().to(pantalla2))
+        .route("/pantalla3", web::get().to(pantalla3))
+        .route("/crear_usuario", web::post().to(crear_usuario))
+})
+.bind(("0.0.0.0", port))?
+
+    // HttpServer::new(move || {
+    //     App::new()
+    //         .app_data(web::Data::new(pool.clone()))
+    //         .route("/", web::get().to(inicio))
+    //         .route("/pantalla1", web::get().to(pantalla1))
+    //         .route("/pantalla2", web::get().to(pantalla2))
+    //         .route("/pantalla3", web::get().to(pantalla3))
+    //         .route("/crear_usuario", web::post().to(crear_usuario))
+    // })
+    // .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
